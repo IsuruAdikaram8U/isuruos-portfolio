@@ -1,1 +1,134 @@
 @import "tailwindcss";
+
+/* =========================================================
+   1. Design tokens (see docs/DESIGN.md §1)
+   Dark is the default. Light applies when:
+   - the visitor picked it (data-theme="light" on <html>), or
+   - nothing is picked yet and the OS prefers light.
+   ========================================================= */
+:root {
+  --bg: #090b10;
+  --bg-2: #0f1218;
+  --surface: #151922;
+  --surface-2: #1b202b;
+  --line: #252b37;
+  --line-2: #343c4c;
+  --fg: #edeff4;
+  --muted: #959daf;
+  --faint: #5f677a;
+  --accent: #6f8dff; /* the path / the action */
+  --accent-ink: #0a0c12; /* text on top of accent */
+  --warm: #ff9e64; /* the thing travelling or being chosen */
+  --ok: #5ad7a1; /* states only: running, delivered, done */
+  --violet: #b694ff; /* extra category colour (skills graph) */
+  --glow-a: rgba(111, 141, 255, 0.32);
+  --glow-b: rgba(255, 158, 100, 0.16);
+  /* Boot screen: always near-black, in both themes */
+  --boot-bg: #040507;
+  --boot-fg: #e9ecf2;
+  --boot-dim: #6b7283;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f2f3f7;
+    --bg-2: #e9ebf1;
+    --surface: #ffffff;
+    --surface-2: #f6f7fa;
+    --line: #dadee7;
+    --line-2: #c4cad7;
+    --fg: #11141b;
+    --muted: #535b6d;
+    --faint: #8890a2;
+    --accent: #2e56e6;
+    --accent-ink: #ffffff;
+    --warm: #d0561a;
+    --ok: #11845a;
+    --violet: #7444d6;
+    --glow-a: rgba(46, 86, 230, 0.2);
+    --glow-b: rgba(208, 86, 26, 0.12);
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f2f3f7;
+  --bg-2: #e9ebf1;
+  --surface: #ffffff;
+  --surface-2: #f6f7fa;
+  --line: #dadee7;
+  --line-2: #c4cad7;
+  --fg: #11141b;
+  --muted: #535b6d;
+  --faint: #8890a2;
+  --accent: #2e56e6;
+  --accent-ink: #ffffff;
+  --warm: #d0561a;
+  --ok: #11845a;
+  --violet: #7444d6;
+  --glow-a: rgba(46, 86, 230, 0.2);
+  --glow-b: rgba(208, 86, 26, 0.12);
+  color-scheme: light;
+}
+
+/* =========================================================
+   2. Tailwind mapping
+   "inline" makes each class point straight at the variable,
+   so bg-bg, text-muted, border-line... switch with the theme.
+   ========================================================= */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-warm: var(--warm);
+  --color-ok: var(--ok);
+  --color-violet: var(--violet);
+  --color-boot-bg: var(--boot-bg);
+  --color-boot-fg: var(--boot-fg);
+  --color-boot-dim: var(--boot-dim);
+
+  /* The --font-* variables on the right come from next/font (layout.tsx). */
+  --font-display: var(--font-sora), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, Consolas, monospace;
+  --font-si: var(--font-noto-sinhala), "Iskoola Pota", sans-serif;
+  --font-ta: var(--font-noto-tamil), "Latha", sans-serif;
+}
+
+/* =========================================================
+   3. Base styles
+   ========================================================= */
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-dm-sans), "Segoe UI", system-ui, sans-serif;
+  font-size: 15.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0s !important;
+  }
+}
