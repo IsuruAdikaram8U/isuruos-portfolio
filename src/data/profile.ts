@@ -58,8 +58,21 @@ export type Project = {
   image?: string;         // TODO: /images/projects/<id>.webp when screenshots exist
 };
 
-export type SkillCategory = "languages" | "backend" | "frontend" | "databases" | "devops" | "embedded" | "tools";
-export type Skill = { id: string; name: string; category: SkillCategory; weight: 1 | 2 | 3; projects: string[] };
+export type SkillItem = {
+  name: string;
+  short?: string;  // shorter label for the small tile (the full name is kept for screen readers)
+  icon?: string;   // logo file in /public/tech (without .svg)
+  glyph?: string;  // shown instead when there is no logo
+  /** dark logos on the dark theme: "white" paints the whole logo white (GitHub, Django);
+   *  "invert" swaps its colours (Next.js: black circle + white N → white circle + black N) */
+  light?: "white" | "invert";
+};
+export type SkillGroup = {
+  id: "backend" | "frontend" | "languages" | "databases" | "devops" | "tools";
+  title: string;
+  tag?: string; // small badge on the card, e.g. "core focus"
+  items: SkillItem[];
+};
 
 export type Competition = {
   id: string;
@@ -229,46 +242,74 @@ export const projects: Project[] = [
   },
 ];
 
-/* ---------- skills (force graph) ---------- */
-// weight: 3 = use all the time, 2 = comfortable, 1 = have used. TODO: Isuru to adjust weights.
-export const skillCategories: Record<SkillCategory, string> = {
-  languages: "Languages", backend: "Backend", frontend: "Frontend", databases: "Databases",
-  devops: "DevOps & Cloud", embedded: "Embedded / IoT", tools: "Tools",
-};
-export const skills: Skill[] = [
-  { id: "java", name: "Java", category: "languages", weight: 3, projects: ["servesync", "agrosense"] },
-  { id: "python", name: "Python", category: "languages", weight: 2, projects: ["lectra"] },
-  { id: "javascript", name: "JavaScript", category: "languages", weight: 3, projects: ["chesswiz"] },
-  { id: "c", name: "C", category: "languages", weight: 2, projects: [] },
-  { id: "sql", name: "SQL", category: "languages", weight: 2, projects: ["servesync", "agrosense", "lectra"] },
-  { id: "spring", name: "Spring Boot", category: "backend", weight: 3, projects: ["servesync", "agrosense"] },
-  { id: "drf", name: "Django REST Framework", category: "backend", weight: 2, projects: ["lectra"] },
-  { id: "rest", name: "REST APIs", category: "backend", weight: 3, projects: ["servesync", "lectra", "agrosense"] },
-  { id: "websockets", name: "WebSockets", category: "backend", weight: 2, projects: ["servesync", "chesswiz"] },
-  { id: "node", name: "Node.js", category: "backend", weight: 2, projects: ["chesswiz"] },
-  { id: "jwt", name: "JWT / OAuth 2.0", category: "backend", weight: 2, projects: ["lectra", "agrosense"] },
-  { id: "react", name: "React", category: "frontend", weight: 3, projects: ["servesync", "chesswiz", "agrosense"] },
-  { id: "next", name: "Next.js", category: "frontend", weight: 2, projects: ["lectra"] },
-  { id: "vite", name: "Vite", category: "frontend", weight: 2, projects: ["servesync", "agrosense"] },
-  { id: "tailwind", name: "Tailwind CSS", category: "frontend", weight: 3, projects: ["servesync", "agrosense"] },
-  { id: "htmlcss", name: "HTML5 & CSS3", category: "frontend", weight: 3, projects: [] },
-  { id: "mysql", name: "MySQL", category: "databases", weight: 3, projects: ["servesync", "agrosense"] },
-  { id: "postgres", name: "PostgreSQL", category: "databases", weight: 2, projects: ["lectra"] },
-  { id: "mongodb", name: "MongoDB", category: "databases", weight: 1, projects: [] },
-  { id: "mssql", name: "MSSQL", category: "databases", weight: 1, projects: [] },
-  { id: "docker", name: "Docker", category: "devops", weight: 2, projects: ["lectra"] },
-  { id: "gha", name: "GitHub Actions (CI/CD)", category: "devops", weight: 1, projects: [] },
-  { id: "aws", name: "AWS", category: "devops", weight: 1, projects: [] },
-  { id: "esp32", name: "ESP32", category: "embedded", weight: 2, projects: ["chesswiz"] },
-  { id: "arduino", name: "Arduino", category: "embedded", weight: 2, projects: ["chesswiz"] },
-  { id: "cpp", name: "Embedded C++", category: "embedded", weight: 2, projects: ["chesswiz"] },
-  { id: "git", name: "Git & GitHub", category: "tools", weight: 3, projects: [] },
-  { id: "postman", name: "Postman", category: "tools", weight: 2, projects: [] },
-  { id: "swagger", name: "Swagger", category: "tools", weight: 1, projects: [] },
-  { id: "cloudinary", name: "Cloudinary", category: "tools", weight: 2, projects: ["servesync", "agrosense"] },
-  { id: "figma", name: "Figma", category: "tools", weight: 1, projects: [] },
+/* ---------- skills (a hub with 6 spokes; the CV's "Technical Skills") ---------- */
+// Order = position around the hub, clockwise from the top (60° apart):
+// top, upper right, lower right, bottom, lower left, upper left.
+export const skillGroups: SkillGroup[] = [
+  {
+    id: "languages", title: "Languages",
+    items: [
+      { name: "Java", icon: "java" },
+      { name: "C", icon: "c" },
+      { name: "SQL", glyph: "SQL" },
+      { name: "Python", icon: "python" },
+      { name: "JavaScript", icon: "javascript" },
+      { name: "TypeScript", icon: "typescript" },
+    ],
+  },
+  {
+    id: "frontend", title: "Frontend",
+    items: [
+      { name: "React", icon: "react" },
+      { name: "Next.js", icon: "nextjs", light: "invert" },
+      { name: "Tailwind CSS", icon: "tailwindcss" },
+      { name: "Vite", icon: "vitejs" },
+      { name: "HTML5", icon: "html5" },
+      { name: "CSS3", icon: "css3" },
+    ],
+  },
+  {
+    id: "tools", title: "Tools & Platforms",
+    items: [
+      { name: "Git", icon: "git" },
+      { name: "GitHub", icon: "github", light: "white" },
+      { name: "Postman", icon: "postman" },
+      { name: "Swagger", icon: "swagger" },
+      { name: "Figma", icon: "figma" },
+      { name: "Blender", icon: "blender" },
+    ],
+  },
+  {
+    id: "databases", title: "Databases",
+    items: [
+      { name: "MySQL", icon: "mysql" },
+      { name: "PostgreSQL", icon: "postgresql" },
+      { name: "MSSQL", icon: "microsoftsqlserver" },
+      { name: "MongoDB", icon: "mongodb" },
+    ],
+  },
+  {
+    id: "devops", title: "DevOps & Cloud",
+    items: [
+      { name: "Docker", icon: "docker" },
+      { name: "GitHub Actions (CI/CD)", short: "GitHub Actions", icon: "githubactions" },
+      { name: "AWS", icon: "amazonwebservices" },
+      { name: "Amazon S3", icon: "amazons3" },
+      { name: "Aiven", icon: "aiven" },
+      { name: "Cloudinary", icon: "cloudinary" },
+    ],
+  },
+  {
+    id: "backend", title: "Backend",
+    items: [
+      { name: "Spring Boot", icon: "spring" },
+      { name: "Django REST Framework", short: "Django REST", icon: "django", light: "white" },
+      { name: "REST APIs", glyph: "{ }" },
+      { name: "WebSockets", glyph: "⇄" },
+      { name: "JWT", icon: "jwt" },
+    ],
+  },
 ];
-export const methodologies = ["Agile", "Scrum"];
 
 /* ---------- awards (max-heap) ---------- */
 // The tab "Competitions" has exactly 7 items, which fills a 3-level heap perfectly.

@@ -7,7 +7,7 @@ import { useOS } from "@/store/useOS";
  * TEMPORARY. One empty block per section that isn't built yet, so the nav bar has
  * something to scroll to. Each block is replaced by the real section as we build them.
  */
-const BUILT = new Set(["home", "education"]);
+const BUILT = new Set(["home", "education", "skills"]);
 
 export default function WorkspacePlaceholder() {
   const replayIntro = useOS((s) => s.replayIntro);
