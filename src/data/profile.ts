@@ -39,23 +39,22 @@ export type Thread = {
   tags: string[];
 };
 
+/** a technology chip on a project card: logo file in /public/tech, or a glyph when there's no logo */
+export type TechChip = { name: string; icon?: string; glyph?: string; light?: "white" | "invert" };
+
 export type Project = {
   id: string;
   name: string;
   subtitle: string;
   type: "Group project" | "Self project" | "Hackathon";
   context: string;        // e.g. "2nd-year Group Software Project"
-  year: number;           // used by the "Newest" sort; TODO confirm
-  complexity: number;     // 1-10, used by the "Complexity" sort; Isuru's own rating
-  primaryStack: string;   // used by the "Stack A–Z" sort
-  oneLiner: string;
-  problem: string;
+  status?: string;        // e.g. "In development"
+  accent: string;         // the card's tint colour
   built: string[];        // what Isuru personally built (from the CV bullets)
-  architecture: string;   // one line, arrows between parts
-  tech: string[];
+  tech: TechChip[];
   links: { github?: string; live?: string };
-  status?: string;        // e.g. "Under active development"
-  image?: string;         // TODO: /images/projects/<id>.webp when screenshots exist
+  /** screenshot: /images/projects/<id>.webp (16:10). Until it exists, the card shows a placeholder. */
+  image?: { src: string; alt: string };
 };
 
 export type SkillItem = {
@@ -182,63 +181,90 @@ export const threads: Thread[] = [
     summary: "Showcased the ChessWiz automated chess board to visitors at the faculty exhibition.", tags: ["ESP32", "React"] }, // TODO month
 ];
 
-/* ---------- projects (quicksort) ---------- */
+/* ---------- projects (stacking cards) ---------- */
+// Links come from the CV. Screenshots: drop /public/images/projects/<id>.webp (16:10) and add `image`.
 export const projects: Project[] = [
   {
     id: "servesync", name: "ServeSync", subtitle: "Multi-Branch Restaurant Management Platform",
-    type: "Group project", context: "2nd-year Group Software Project", year: 2025, complexity: 9, primaryStack: "Spring Boot", // TODO confirm year
-    oneLiner: "Restaurant platform with real-time kitchen and receptionist workflows across branches.",
-    problem: "Restaurants with several branches lose track of orders, tables and stock between the front desk and the kitchen.",
+    type: "Group project", context: "2nd-year Group Software Project", accent: "#ff9e64",
     built: [
       "Built the Kitchen module end-to-end: status-cascading order queues, per-item chef assignment across cooks, automated inventory control and a chef-driven menu workflow.",
       "Built the Receptionist module end-to-end: order queues with kitchen/hold/cancel actions, table and reservation management, and cash payment collection with an automated table-locking scheduler.",
       "Engineered a real-time WebSocket notification system and Cloudinary-powered menu image uploads.",
     ],
-    architecture: "React (Vite) → Spring Boot REST + WebSocket → MySQL (Aiven) · images → Cloudinary",
-    tech: ["Java", "Spring Boot", "React", "Vite", "Tailwind CSS", "MySQL (Aiven)", "WebSocket", "Cloudinary"],
-    links: { github: "", live: "" }, // TODO URLs
+    tech: [
+      { name: "Java", icon: "java" },
+      { name: "Spring Boot", icon: "spring" },
+      { name: "React", icon: "react" },
+      { name: "Vite", icon: "vitejs" },
+      { name: "Tailwind CSS", icon: "tailwindcss" },
+      { name: "MySQL", icon: "mysql" },
+      { name: "Aiven", icon: "aiven" },
+      { name: "WebSocket", glyph: "⇄" },
+      { name: "Cloudinary", icon: "cloudinary" },
+    ],
+    links: { github: "https://github.com/Byte-knight-team/BK_SP_Backend", live: "https://cravehouse.netlify.app/" },
   },
   {
     id: "lectra", name: "Lectra", subtitle: "Smart Academic Timetable Management System",
-    type: "Self project", context: "Self project", year: 2026, complexity: 9, primaryStack: "Django REST", status: "Under active development", // TODO confirm complexity
-    oneLiner: "Generates clash-free timetables and exam schedules across lecturers, modules, halls and batches.",
-    problem: "Building a university timetable by hand takes weeks, and clashes between lecturers, halls and student batches still slip through.",
+    type: "Self project", context: "Self project", status: "In development", accent: "#6f8dff",
     built: [
       "Building an academic scheduling platform that automates clash-free timetable and exam generation across lecturers, modules, halls and student batches.",
       "Engineering a constraint-based scheduling engine with real-time clash detection and automatic timetable generation.",
       "Implementing secure JWT and OAuth 2.0 authentication with role-based access control, a Gemini-powered AI assistant, PDF export, and a fully containerised development environment with Docker Compose.",
     ],
-    architecture: "Next.js → Django REST API → constraint scheduler → PostgreSQL · Gemini API · Docker Compose",
-    tech: ["Python", "Django REST Framework", "PostgreSQL", "Next.js", "JWT", "OAuth 2.0", "Google Gemini API", "Docker"],
-    links: { github: "" }, // TODO URL
+    tech: [
+      { name: "Python", icon: "python" },
+      { name: "Django REST", icon: "django", light: "white" },
+      { name: "PostgreSQL", icon: "postgresql" },
+      { name: "Next.js", icon: "nextjs", light: "invert" },
+      { name: "JWT", icon: "jwt" },
+      { name: "OAuth 2.0", glyph: "OA" },
+      { name: "Gemini API", icon: "gemini" },
+      { name: "Docker", icon: "docker" },
+    ],
+    links: { github: "https://github.com/IsuruAdikaram8U/lectra" },
   },
   {
     id: "chesswiz", name: "ChessWiz", subtitle: "Smart Automated Chess Board & Interactive Chess Web Platform",
-    type: "Group project", context: "1st-year Microcontroller-Based Applications Development Project", year: 2025, complexity: 10, primaryStack: "ESP32", // TODO confirm year
-    oneLiner: "A physical chess board that senses moves, moves its own pieces, and syncs with a web app running Stockfish.",
-    problem: "Playing online chess means giving up a real board. ChessWiz keeps the physical board and connects it to online play and an AI opponent.",
+    type: "Group project", context: "1st-year Microcontroller-Based Applications Project", accent: "#b694ff",
     built: [
       "Chose ESP32 for WiFi and sensor-scanning coordination, Arduino for precise real-time stepper motor and electromagnet control, and Node.js with Socket.io and Stockfish AI for an AI-powered web interface synced with the physical board.",
       "Built move detection through a Hall sensor matrix and synchronised board state in real time with a React web app that supports online play.",
       "Programmed the ESP32 Hall sensor grid and move-detection logic, and designed the PCB layout and 3D models of the internal mechanism.",
     ],
-    architecture: "Hall sensor grid → ESP32 ⇄ Node.js + Socket.io ⇄ React · Stockfish AI · Arduino → steppers + electromagnet",
-    tech: ["ESP32", "Arduino", "Embedded C++", "React", "Node.js", "Socket.io", "Stockfish AI"],
-    links: { github: "" }, // TODO URL
+    tech: [
+      { name: "ESP32", icon: "esp32" },
+      { name: "Arduino", icon: "arduino" },
+      { name: "Embedded C++", icon: "cplusplus" },
+      { name: "React", icon: "react" },
+      { name: "Node.js", icon: "nodejs" },
+      { name: "Socket.io", icon: "socketio", light: "white" },
+      { name: "Stockfish AI", glyph: "♞" },
+    ],
+    links: { github: "https://github.com/Team-ZEUS-ChessWiz/ChessWiz" },
   },
   {
     id: "agrosense", name: "AgroSense", subtitle: "Agricultural Decision-Support Platform",
-    type: "Hackathon", context: "Devthon 3.0 Hackathon · Semi-Finalist", year: 2026, complexity: 7, primaryStack: "Spring Boot",
-    oneLiner: "Weather-aware crop recommendations, disease-risk alerts and market prices for farmers.",
-    problem: "Farmers make planting and treatment decisions without hyperlocal weather data, disease-risk warnings or fair market prices.",
+    type: "Hackathon", context: "Devthon 3.0 Hackathon · Semi-Finalist", accent: "#5ad7a1",
     built: [
       "Built a Spring Boot backend and React frontend that deliver weather-responsive crop recommendations, disease risk mitigation and real-time market transparency.",
       "Integrated the OpenWeatherMap API for hyperlocal data and Cloudinary for media storage.",
       "Developed personalised dashboards, crop risk analysis and an admin management panel on an Aiven-hosted MySQL database.",
     ],
-    architecture: "React (Vite) → Spring Boot (JWT) → MySQL (Aiven) · OpenWeatherMap API · Cloudinary",
-    tech: ["Java", "Spring Boot", "MySQL (Aiven)", "React", "Vite", "Tailwind CSS", "JWT", "Cloudinary", "OpenWeatherMap API"],
-    links: { github: "", live: "" }, // TODO URLs
+    tech: [
+      { name: "Java", icon: "java" },
+      { name: "Spring Boot", icon: "spring" },
+      { name: "React", icon: "react" },
+      { name: "Vite", icon: "vitejs" },
+      { name: "Tailwind CSS", icon: "tailwindcss" },
+      { name: "MySQL", icon: "mysql" },
+      { name: "Aiven", icon: "aiven" },
+      { name: "JWT", icon: "jwt" },
+      { name: "Cloudinary", icon: "cloudinary" },
+      { name: "OpenWeatherMap", glyph: "☁︎" },
+    ],
+    links: { github: "https://github.com/Fourth-X-Born/agro-sense-AI-backend", live: "https://agrosense-web.netlify.app/" },
   },
 ];
 
