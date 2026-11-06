@@ -1,63 +1,38 @@
 import type { Metadata } from "next";
-import {
-  DM_Sans,
-  JetBrains_Mono,
-  Noto_Sans_Sinhala,
-  Noto_Sans_Tamil,
-  Sora,
-} from "next/font/google";
-import { ThemeSync } from "@/components/shell/ThemeSync";
-import { themeBootstrapScript } from "@/lib/theme";
+import { DM_Sans, JetBrains_Mono, Noto_Sans_Sinhala, Noto_Sans_Tamil, Sora } from "next/font/google";
 import "./globals.css";
 
-// next/font downloads these at build time and serves them from our own domain.
-// Each one becomes a CSS variable that globals.css uses.
-const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
-// opsz = optical size: small text gets slightly sturdier letter shapes.
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  axes: ["opsz"],
-  variable: "--font-dm-sans",
-});
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-});
-// Only the Hello screen uses these, so don't preload them on every page load.
-const notoSinhala = Noto_Sans_Sinhala({
-  subsets: ["sinhala"],
-  weight: ["600", "700"],
-  variable: "--font-noto-sinhala",
-  preload: false,
-});
-const notoTamil = Noto_Sans_Tamil({
-  subsets: ["tamil"],
-  weight: ["600", "700"],
-  variable: "--font-noto-tamil",
-  preload: false,
-});
-
-const fontVariables = [sora, dmSans, jetbrainsMono, notoSinhala, notoTamil]
-  .map((f) => f.variable)
-  .join(" ");
+// Fonts become CSS variables; globals.css turns them into --f-display, --f-body, --f-mono, ...
+const sora = Sora({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-sora", display: "swap" });
+const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-dm-sans", display: "swap" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-jetbrains", display: "swap" });
+const sinhala = Noto_Sans_Sinhala({ subsets: ["sinhala"], weight: ["600", "700"], variable: "--font-sinhala", display: "swap" });
+const tamil = Noto_Sans_Tamil({ subsets: ["tamil"], weight: ["600", "700"], variable: "--font-tamil", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "IsuruOS",
-  description: "Portfolio of Isuru Adikaram",
+  title: "Isuru Adikaram · IsuruOS",
+  description: "Portfolio of Isuru Adikaram, full-stack and backend developer at the University of Moratuwa.",
 };
+
+/**
+ * Runs before the first paint: picks the saved theme (or the system theme) and sets
+ * <html data-theme="...">, so the page never flashes in the wrong colours.
+ * It reads the same localStorage key as the zustand store (src/store/useOS.ts).
+ */
+const themeScript = `(function(){try{var s=JSON.parse(localStorage.getItem("isuruos")||"null");var t=s&&s.state&&s.state.theme;if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // suppressHydrationWarning: the inline script may add data-theme before
-    // React loads, so the server HTML and the browser DOM can differ here on purpose.
-    <html lang="en" className={fontVariables} suppressHydrationWarning>
+    <html
+      lang="en"
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`${sora.variable} ${dmSans.variable} ${jetbrains.variable} ${sinhala.variable} ${tamil.variable}`}
+    >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>
-        <ThemeSync />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

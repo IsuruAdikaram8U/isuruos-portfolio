@@ -1,0 +1,310 @@
+/* IsuruOS intro (global CSS: every class starts with "ios-" so nothing clashes).
+   One dark screen that slides up like a lock screen when the visitor enters. */
+
+.ios-os {
+  /* the intro is always dark, whatever theme the site uses */
+  --bg: #07090d;
+  --fg: #edeff4;
+  --muted: #959daf;
+  --faint: #5f677a;
+  --accent: #6f8dff;
+  --warm: #ff9e64;
+  --icon: #b9c5f5;
+
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  color: var(--fg);
+  color-scheme: dark;
+  overflow: hidden;
+  overflow: clip;
+  transition:
+    transform 1s cubic-bezier(0.75, 0, 0.2, 1),
+    border-radius 1s;
+}
+.ios-leaving {
+  transform: translateY(-100%);
+  border-radius: 0 0 32px 32px;
+}
+
+/* ---------- light and depth ---------- */
+.ios-glow {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      34% 40% at 30% 42%,
+      rgba(111, 141, 255, 0.16),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 34% at 78% 22%,
+      rgba(111, 141, 255, 0.1),
+      transparent 70%
+    ),
+    radial-gradient(
+      26% 30% at 70% 88%,
+      rgba(255, 158, 100, 0.07),
+      transparent 70%
+    );
+  filter: blur(20px);
+  animation: ios-drift 18s ease-in-out infinite alternate;
+}
+@keyframes ios-drift {
+  to {
+    transform: translate(3%, -2%) scale(1.04);
+  }
+}
+
+/* darker edges, like a lens */
+.ios-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 90% at 50% 50%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.55) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.35),
+      transparent 18%,
+      transparent 82%,
+      rgba(0, 0, 0, 0.4)
+    );
+}
+
+/* ---------- Isuru's photo (left half) ---------- */
+.ios-portrait {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 55vw;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  animation:
+    ios-in 1.2s ease-out both,
+    ios-breathe 16s ease-in-out 1.2s infinite alternate;
+}
+.ios-portrait canvas {
+  display: block;
+  /* the photo is square: same size the plain photo had */
+  width: min(94vh, 55vw);
+  height: min(94vh, 55vw);
+  /* the shirt fades softly into the dark background */
+  mask-image: linear-gradient(180deg, #000 70%, transparent 98%);
+  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 98%);
+}
+@keyframes ios-breathe {
+  to {
+    transform: scale(1.035);
+  }
+}
+
+/* ---------- floating tech logos ---------- */
+.ios-tech {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: ios-in 1.6s ease-out 0.7s both;
+}
+.ios-tech-icon {
+  /* two filter parts: --lf turns black logos white, --df adds a glow to near icons */
+  --lf: brightness(1);
+  --df: blur(0);
+  position: absolute;
+  translate: -50% -50%;
+  filter: var(--lf) var(--df);
+  animation: ios-float 12s ease-in-out infinite alternate;
+}
+.ios-tech-icon img,
+.ios-tech-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* black logos (GitHub, Next.js, ...) shown in white, like on dark backgrounds */
+.ios-tech-light {
+  --lf: brightness(0) invert(0.92);
+}
+/* near: bright, with a soft glow */
+.ios-depth-0 {
+  opacity: 0.85;
+  --df: drop-shadow(0 0 16px rgba(111, 141, 255, 0.35));
+}
+/* middle */
+.ios-depth-1 {
+  opacity: 0.5;
+}
+/* far: fainter (sharp, no blur) */
+.ios-depth-2 {
+  opacity: 0.28;
+}
+@keyframes ios-float {
+  0% {
+    transform: translateY(-9px) rotate(-4deg);
+  }
+  100% {
+    transform: translateY(9px) rotate(4deg);
+  }
+}
+
+/* ---------- text (right half) ---------- */
+.ios-copy {
+  position: absolute;
+  z-index: 2;
+  left: 55vw;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(600px, 40vw);
+  display: grid;
+  justify-items: start;
+}
+.ios-copy > * {
+  animation: ios-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.ios-copy > :nth-child(1) {
+  animation-delay: 0.35s;
+}
+.ios-copy > :nth-child(2) {
+  animation-delay: 0.5s;
+}
+.ios-copy > :nth-child(3) {
+  animation-delay: 0.65s;
+}
+.ios-copy > :nth-child(4) {
+  animation-delay: 0.9s;
+}
+
+.ios-hello {
+  margin: 0;
+  font: 800 clamp(84px, 11vw, 184px)/0.9 var(--f-display);
+  letter-spacing: -0.055em;
+  background: linear-gradient(180deg, #ffffff 30%, #aeb9dc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ios-hello span {
+  color: var(--accent);
+  -webkit-text-fill-color: var(--accent);
+}
+.ios-welcome {
+  margin: 22px 0 0;
+  font: 500 clamp(19px, 1.9vw, 27px)/1.35 var(--f-display);
+  letter-spacing: -0.015em;
+  color: var(--muted);
+}
+.ios-welcome b {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.ios-scroll-cue {
+  margin-top: 56px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 4px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--muted);
+  font: 500 13px/1 var(--f-mono);
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.ios-scroll-cue:hover {
+  color: var(--fg);
+}
+.ios-mouse {
+  width: 24px;
+  height: 38px;
+  border: 2px solid currentColor;
+  border-radius: 13px;
+  position: relative;
+}
+.ios-mouse::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 7px;
+  width: 4px;
+  height: 8px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: ios-wheel 1.6s ease-in-out infinite;
+}
+@keyframes ios-wheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(11px);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.ios-chev {
+  animation: ios-bob 1.6s ease-in-out infinite;
+}
+@keyframes ios-bob {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+/* ---------- shared entrance animations ---------- */
+@keyframes ios-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ios-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* ---------- phones: face behind the text, text at the bottom ---------- */
+@media (max-width: 760px) {
+  .ios-portrait {
+    width: 100%;
+    opacity: 0.5;
+  }
+  .ios-portrait canvas {
+    width: 100vw;
+    height: 100vw;
+  }
+  .ios-copy {
+    left: max(24px, env(safe-area-inset-left, 0px));
+    right: 24px;
+    top: auto;
+    bottom: max(10vh, calc(env(safe-area-inset-bottom, 0px) + 40px));
+    transform: none;
+    width: auto;
+  }
+  .ios-scroll-cue {
+    margin-top: 36px;
+  }
+  .ios-depth-2 {
+    display: none;
+  }
+  .ios-tech {
+    opacity: 0.6;
+  }
+}
