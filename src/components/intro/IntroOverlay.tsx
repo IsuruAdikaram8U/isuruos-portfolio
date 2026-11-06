@@ -20,10 +20,50 @@ export default function IntroOverlay() {
   // load the saved mode / theme from localStorage (after hydration, see useOS.ts)
   useEffect(() => {
     useOS.persist.rehydrate();
+    // Every visit starts at Home: don't let the browser restore an old scroll position
+    // or jump to a #section left in the URL from last time.
+    history.scrollRestoration = "manual";
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    window.scrollTo(0, 0);
   }, []);
 
   // Mounted fresh every time the intro opens, so "Replay intro" starts clean.
   return introOpen ? <IntroScreen /> : null;
+}
+
+const QUIET_MS = 260; // a gap this long means the scroll gesture has really ended
+const MAX_HOLD_MS = 2500;
+const SCROLL_KEYS = ["ArrowDown", "PageDown", " ", "End", "Enter"];
+
+/**
+ * After the intro closes, keep the page on Home.
+ * A trackpad flick (or a held key) keeps sending scroll events for a moment after the
+ * intro is gone; those would carry the page halfway down. We swallow them until they
+ * stop, so only a NEW scroll moves the page.
+ */
+function holdAtTop() {
+  window.scrollTo(0, 0);
+  let quiet = 0;
+  const release = () => {
+    window.removeEventListener("wheel", block);
+    window.removeEventListener("touchmove", block);
+    window.removeEventListener("keydown", onKey);
+    clearTimeout(quiet);
+    clearTimeout(cap);
+  };
+  const block = (e: Event) => {
+    e.preventDefault();
+    clearTimeout(quiet);
+    quiet = window.setTimeout(release, QUIET_MS);
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (SCROLL_KEYS.includes(e.key) && e.repeat) block(e);
+  };
+  window.addEventListener("wheel", block, { passive: false });
+  window.addEventListener("touchmove", block, { passive: false });
+  window.addEventListener("keydown", onKey);
+  quiet = window.setTimeout(release, QUIET_MS);
+  const cap = window.setTimeout(release, MAX_HOLD_MS);
 }
 
 function IntroScreen() {
@@ -38,18 +78,23 @@ function IntroScreen() {
     exiting.current = true;
     window.scrollTo(0, 0);
     setLeaving(true);
-    window.setTimeout(closeIntro, reduce ? 0 : EXIT_MS);
+    window.setTimeout(
+      () => {
+        closeIntro();
+        holdAtTop();
+      },
+      reduce ? 0 : EXIT_MS,
+    );
   }, [closeIntro, reduce]);
 
-  // the page behind can't scroll while the intro covers it
+  // the page behind can't scroll while the intro is on screen (also while it slides away)
   useEffect(() => {
-    if (leaving) return;
     const el = document.documentElement;
     el.style.overflow = "hidden";
     return () => {
       el.style.overflow = "";
     };
-  }, [leaving]);
+  }, []);
 
   // Enter, ↓, Page Down, Space or Esc also go in
   useEffect(() => {
