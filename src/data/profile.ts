@@ -11,17 +11,21 @@ export type VisitorMode = "recruiter" | "developer" | "explorer";
 
 export type Link = { label: string; href: string };
 
-export type EducationStage = {
-  id: "lexer" | "parser" | "compiler" | "output";
-  stage: string;          // "Lexer"
-  what: string;           // what this compiler stage does (one line)
+export type EducationStop = {
+  id: "uni" | "al" | "ol";
+  level: string;          // short tag on the card: "University"
   school: string;
   qualification: string;
-  years: string;
-  chips: string[];        // short results shown as chips
-  log: string[];          // "compiler log" lines, shown on hover / when active
-  packet: string;         // text the travelling packet shows at this stage
-  progress?: number;      // 0-100, only for the output stage
+  years: string;          // shown on the card
+  year: string;           // the big year beside the road
+  current?: boolean;      // still studying here (gets the "NOW" badge)
+  headline: { value: string; label: string }; // the one big result
+  highlight?: string;     // one stand-out result on its own line (e.g. district rank)
+  results: string[];      // smaller results, shown as chips on the next line
+  status?: string;        // where Isuru is right now, e.g. "3rd year · Semester 5"
+  logo: { src: string; alt: string; width: number; height: number };
+  /** semester GPAs in order; value null = semester still running */
+  gpaPath?: { term: string; value: number | null; deansList?: boolean }[];
 };
 
 export type Thread = {
@@ -108,36 +112,45 @@ export const stats: Stat[] = [
   { value: 4, label: "Projects", note: "web, real-time and hardware" },
 ];
 
-/* ---------- education (compiler pipeline) ---------- */
-export const education: EducationStage[] = [
+/* ---------- education (a road: newest at the top) ---------- */
+export const educationRoad = {
+  next: "Software engineering internship", // the sign at the top of the road
+  start: { year: "2013", place: "Ranabima Royal College, Peradeniya" }, // where the road begins
+};
+
+export const education: EducationStop[] = [
   {
-    id: "lexer", stage: "Lexer", what: "splits raw input into tokens",
-    school: "Ranabima Royal College, Peradeniya", qualification: "G.C.E. Ordinary Level", years: "2018",
-    chips: ["9 A grades"],
-    log: ["tokenize(subjects) → 9 tokens", "grades: A × 9", "status: passed"],
-    packet: "[curious] [student]",
+    id: "uni", level: "University", current: true,
+    school: "University of Moratuwa", qualification: "B.Sc. (Hons) in Information Technology",
+    years: "2024 – Present", year: "2024",
+    status: "3rd year · Semester 5",
+    headline: { value: "3.77", label: "CGPA / 4.00" },
+    results: [], // the Dean's List semesters are marked on the GPA road below
+    logo: { src: "/images/logos/uom.webp", alt: "University of Moratuwa logo", width: 306, height: 325 },
+    gpaPath: [
+      { term: "S1", value: 3.58 },
+      { term: "S2", value: 3.69 },
+      { term: "S3", value: 3.87, deansList: true },
+      { term: "S4", value: 3.91, deansList: true },
+      { term: "S5", value: null },
+    ],
   },
   {
-    id: "parser", stage: "Parser", what: "builds structure from tokens",
-    school: "Ranabima Royal College, Peradeniya", qualification: "G.C.E. Advanced Level · Physical Science", years: "2022",
-    chips: ["Physics A", "Chemistry A", "Combined Maths B", "Z-score 1.6178"],
-    log: ["parse(stream: physical-science)", "physics: A · chemistry: A · combined maths: B", "z-score: 1.6178", "status: passed → university entrance"],
-    packet: "Expr(physics, chemistry, maths)",
+    id: "al", level: "Advanced Level",
+    school: "Ranabima Royal College, Peradeniya", qualification: "G.C.E. A/L · Physical Science Stream",
+    years: "2022", year: "2022",
+    headline: { value: "1.6178", label: "Z-score" },
+    highlight: "Kandy district rank: 153",
+    results: ["Physics: A", "Chemistry: A", "Combined Mathematics: B"],
+    logo: { src: "/images/logos/ranabima.webp", alt: "Ranabima Royal College crest", width: 220, height: 319 },
   },
   {
-    id: "compiler", stage: "Compiler", what: "turns structure into something that runs",
-    school: "University of Moratuwa", qualification: "B.Sc. (Hons) in Information Technology", years: "2024 – present",
-    chips: ["CGPA 3.77 / 4.00", "Dean's List · S3 (3.87)", "Dean's List · S4 (3.91)"],
-    log: ['compile --faculty "Information Technology"', "optimise: dean's list, semester 3 (SGPA 3.87)", "optimise: dean's list, semester 4 (SGPA 3.91)", "status: running"],
-    packet: "0x49 0x53 0x55 0x52 0x55",
-  },
-  {
-    id: "output", stage: "Output", what: "the final executable",
-    school: "isuru.exe", qualification: "Software engineer", years: "TODO: expected graduation year",
-    chips: ["next: internship"],
-    log: ["link --with real-world-experience", "waiting for: internship", "eta: graduation (TODO year)"],
-    packet: "isuru.exe ▸ building",
-    progress: undefined, // TODO: % of degree done (e.g. 5 of 8 semesters = 62)
+    id: "ol", level: "Ordinary Level",
+    school: "Ranabima Royal College, Peradeniya", qualification: "G.C.E. O/L",
+    years: "2018", year: "2018",
+    headline: { value: "9 A", label: "grades" },
+    results: [],
+    logo: { src: "/images/logos/ranabima.webp", alt: "Ranabima Royal College crest", width: 220, height: 319 },
   },
 ];
 

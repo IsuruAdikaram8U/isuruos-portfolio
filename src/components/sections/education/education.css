@@ -1,0 +1,760 @@
+/* =========================================================
+   Education: a road (prefix: ed-)
+   ========================================================= */
+
+.ed {
+  --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+  --road-w: 64px;
+  --pin: 56px;
+  position: relative;
+  padding: 120px 32px 150px;
+}
+
+.ed-map {
+  position: relative;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* ---------- the road ---------- */
+.ed-road {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--road-w);
+  margin-left: calc(var(--road-w) / -2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+  box-shadow:
+    inset 1px 0 0 var(--line-2),
+    inset -1px 0 0 var(--line-2);
+  /* the road fades in at the top and out at the bottom */
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+/* dashed centre line that slowly "drives" */
+.ed-lane,
+.ed-lit {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: repeating-linear-gradient(180deg, var(--dash) 0 16px, transparent 16px 34px);
+  animation: ed-drive 1.8s linear infinite;
+}
+
+.ed-lane {
+  --dash: var(--line-2);
+}
+
+/* the lit part of the line: grows from the top as you scroll (--lit is set in Education.tsx) */
+.ed-lit {
+  --dash: var(--accent);
+  filter: drop-shadow(0 0 5px var(--accent));
+  clip-path: inset(0 0 calc((1 - var(--lit, 0)) * 100%) 0);
+}
+
+@keyframes ed-drive {
+  to {
+    background-position: 0 34px;
+  }
+}
+
+/* a little headlight at the end of the lit line */
+.ed-road::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(var(--lit, 0) * 100%);
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 0 12px 3px var(--accent),
+    0 0 40px 10px var(--glow-a);
+  opacity: calc(var(--lit, 0) * 40);
+}
+
+/* ---------- sign at the top and start at the bottom ---------- */
+.ed-sign,
+.ed-start {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 14px 24px;
+  border-radius: 18px;
+  background: var(--bg);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: center;
+}
+
+.ed-sign {
+  margin-bottom: 88px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line-2));
+  box-shadow: 0 0 40px -14px var(--glow-a);
+}
+
+.ed-start {
+  margin-top: 96px;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+}
+
+.ed-start-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.ed-sign-tag {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ed-start .ed-sign-tag {
+  color: var(--faint);
+}
+
+/* ---------- stops ---------- */
+.ed-stops {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 104px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ed-stop {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 144px minmax(0, 1fr);
+  align-items: center;
+}
+
+.ed-stop > * {
+  grid-row: 1;
+}
+
+.ed-pin {
+  grid-column: 2;
+}
+
+.ed-stop[data-side="left"] .ed-card {
+  grid-column: 1;
+}
+
+.ed-stop[data-side="left"] .ed-year {
+  grid-column: 3;
+  justify-self: start;
+  padding-left: 28px;
+}
+
+.ed-stop[data-side="right"] .ed-card {
+  grid-column: 3;
+}
+
+.ed-stop[data-side="right"] .ed-year {
+  grid-column: 1;
+  justify-self: end;
+  padding-right: 28px;
+}
+
+/* ---------- card ---------- */
+.ed-card {
+  position: relative;
+  padding: 30px 30px 28px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 85%, transparent),
+    color-mix(in srgb, var(--surface) 45%, transparent)
+  );
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transform: translateX(var(--from, -36px));
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s var(--ease),
+    border-color 0.3s ease;
+}
+
+.ed-stop[data-side="right"] .ed-card {
+  --from: 36px;
+}
+
+.ed-stop[data-in="true"] .ed-card {
+  opacity: 1;
+  transform: none;
+}
+
+.ed-card:hover {
+  border-color: var(--line-2);
+}
+
+.ed-stop[data-current="true"] .ed-card {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow:
+    0 24px 60px -30px rgba(0, 0, 0, 0.7),
+    0 0 60px -24px var(--glow-a);
+}
+
+/* short line from the card to the pin on the road */
+.ed-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: calc((144px - var(--pin)) / 2);
+  height: 1px;
+}
+
+.ed-stop[data-side="left"] .ed-card::after {
+  right: calc((144px - var(--pin)) / -2);
+  background: linear-gradient(90deg, var(--line-2), var(--accent));
+}
+
+.ed-stop[data-side="right"] .ed-card::after {
+  left: calc((144px - var(--pin)) / -2);
+  background: linear-gradient(90deg, var(--accent), var(--line-2));
+}
+
+.ed-card-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* School crest, straight on the card. A soft light sits BEHIND it (not a filter on
+   the image, which would blur it) so the crest's black outlines still show. */
+.ed-logo {
+  --logo-h: 88px;
+  position: relative;
+  flex: none;
+  display: block;
+  height: var(--logo-h);
+}
+
+.ed-logo::before {
+  content: "";
+  position: absolute;
+  inset: -6% -14%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.13), transparent);
+}
+
+.ed-logo img {
+  position: relative;
+  display: block;
+  width: auto;
+  height: var(--logo-h); /* a fixed height: the crest scales down, keeping its shape */
+}
+
+.ed-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 7px 14px 7px 11px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--warm) 45%, var(--line-2));
+  background: color-mix(in srgb, var(--warm) 10%, transparent);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.ed-highlight svg {
+  width: 15px;
+  height: 15px;
+  fill: var(--warm);
+}
+
+/* the subject results sit on their own line under the highlight */
+.ed-highlight + .ed-chips {
+  margin-top: 10px;
+}
+
+.ed-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-right: auto;
+}
+
+.ed-now {
+  align-self: flex-start;
+}
+
+.ed-status {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.ed-status > span:first-child {
+  color: var(--ok);
+}
+
+.ed-status-dim {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* ---------- GPA road (university card) ---------- */
+.ed-gpa {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.ed-gpa-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ed-gpa-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--faint);
+}
+
+.ed-gpa-key i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* a straight road: value on top, checkpoint in the middle, semester below */
+.ed-gpa-road {
+  --row: 40px; /* height from the top of a checkpoint column to the centre of its node */
+  position: relative;
+  margin-top: 22px;
+}
+
+.ed-gpa-done,
+.ed-gpa-ahead {
+  position: absolute;
+  top: calc(var(--row) - 1px);
+  height: 2px;
+  border-radius: 2px;
+}
+
+/* the finished stretch fills in from the left when the card appears */
+.ed-gpa-done {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, var(--line-2)), var(--accent));
+  box-shadow: 0 0 10px -2px var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.3s var(--ease) 0.35s;
+}
+
+.ed-gpa[data-show="true"] .ed-gpa-done {
+  transform: none;
+}
+
+.ed-gpa-ahead {
+  background: repeating-linear-gradient(90deg, var(--faint) 0 5px, transparent 5px 10px);
+  opacity: 0;
+  transition: opacity 0.6s ease 1.5s;
+}
+
+.ed-gpa[data-show="true"] .ed-gpa-ahead {
+  opacity: 0.8;
+}
+
+.ed-gpa-list {
+  position: relative;
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ed-gpa-cp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.45s ease,
+    transform 0.5s var(--ease);
+  transition-delay: calc(0.4s + var(--i) * 0.25s);
+}
+
+.ed-gpa[data-show="true"] .ed-gpa-cp {
+  opacity: 1;
+  transform: none;
+}
+
+.ed-gpa-val {
+  height: 18px;
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--fg);
+}
+
+.ed-gpa-node {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  margin: 15px 0 7px; /* keeps every node's centre on the road line (--row) */
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+}
+
+.ed-gpa-term {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* Dean's List: a big glowing checkpoint with a star, a tag underneath */
+.ed-gpa-cp[data-dl="true"] .ed-gpa-node {
+  width: 30px;
+  height: 30px;
+  margin: 7px 0 -1px;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--violet));
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--accent) 16%, transparent),
+    0 0 22px var(--accent);
+}
+
+.ed-gpa-cp[data-dl="true"] .ed-gpa-node svg {
+  width: 15px;
+  height: 15px;
+  fill: #fff;
+}
+
+.ed-gpa-cp[data-dl="true"] .ed-gpa-val {
+  color: var(--accent);
+}
+
+.ed-gpa-cp[data-dl="true"] .ed-gpa-term {
+  color: var(--fg);
+}
+
+.ed-gpa-tag {
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+/* the semester that's still running */
+.ed-gpa-cp[data-open="true"] .ed-gpa-node {
+  border: 1.5px dashed var(--muted);
+  animation: ed-blink 1.6s ease-in-out infinite;
+}
+
+.ed-gpa-cp[data-open="true"] .ed-gpa-val {
+  color: var(--muted);
+}
+
+.ed-gpa-cp[data-open="true"] .ed-gpa-term {
+  color: var(--ok);
+}
+
+.ed-level {
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ed-years {
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.ed-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
+
+.ed-now span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  animation: ed-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes ed-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.ed-school {
+  margin: 18px 0 6px;
+  font-family: var(--f-display);
+  font-size: clamp(20px, 1.8vw, 25px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--fg);
+}
+
+.ed-qual {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.ed-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 22px 0 0;
+}
+
+.ed-headline b {
+  font-family: var(--f-display);
+  font-size: clamp(36px, 3.4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(180deg, var(--fg) 30%, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ed-stop[data-current="true"] .ed-headline b {
+  background-image: linear-gradient(90deg, var(--accent), var(--violet));
+}
+
+.ed-headline span {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ed-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ed-chips li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+  font-size: 13px;
+  color: var(--fg);
+}
+
+/* ---------- pin on the road ---------- */
+.ed-pin {
+  position: relative;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: var(--pin);
+  height: var(--pin);
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+  color: var(--muted);
+  transform: scale(0.7);
+  transition:
+    transform 0.7s var(--ease) 0.15s,
+    color 0.5s ease,
+    border-color 0.5s ease,
+    box-shadow 0.5s ease;
+}
+
+.ed-pin svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ed-stop[data-in="true"] .ed-pin {
+  transform: none;
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line-2));
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--accent) 10%, transparent),
+    0 0 28px var(--glow-a);
+}
+
+/* the current stop keeps pulsing */
+.ed-stop[data-current="true"] .ed-pin::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  animation: ed-pulse 2.4s ease-out infinite;
+}
+
+@keyframes ed-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+/* ---------- big outlined year on the other side of the road ---------- */
+.ed-year {
+  font-family: var(--f-display);
+  font-size: clamp(56px, 7vw, 112px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line-2);
+  opacity: 0;
+  transition:
+    opacity 1s ease 0.25s,
+    -webkit-text-stroke-color 0.6s ease;
+}
+
+.ed-stop[data-in="true"] .ed-year {
+  opacity: 1;
+}
+
+.ed-stop[data-current="true"][data-in="true"] .ed-year {
+  -webkit-text-stroke-color: color-mix(in srgb, var(--accent) 60%, var(--line-2));
+}
+
+/* ---------- phones and tablets: road on the left, cards on the right ---------- */
+@media (max-width: 900px) {
+  .ed {
+    --road-w: 44px;
+    --pin: 44px;
+    padding: 96px 20px 110px;
+  }
+
+  .ed-road {
+    left: 22px;
+  }
+
+  .ed-sign,
+  .ed-start {
+    align-items: flex-start;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .ed-stops {
+    gap: 56px;
+  }
+
+  .ed-stop {
+    grid-template-columns: 44px minmax(0, 1fr);
+    column-gap: 16px;
+  }
+
+  .ed-pin {
+    grid-column: 1;
+    align-self: start;
+    margin-top: 26px;
+  }
+
+  .ed-pin svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ed-stop[data-side] .ed-card {
+    grid-column: 2;
+    --from: 24px;
+    padding: 24px 22px 22px;
+  }
+
+  .ed-card::after,
+  .ed-year {
+    display: none;
+  }
+
+  .ed-logo {
+    --logo-h: 68px;
+  }
+}
+
+/* narrow phones: let the GPA tags wrap so neighbours don't overlap */
+@media (max-width: 520px) {
+  .ed-gpa-tag {
+    padding: 2px 5px;
+    font-size: 9.5px;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .ed-gpa-val {
+    font-size: 11px;
+  }
+}
