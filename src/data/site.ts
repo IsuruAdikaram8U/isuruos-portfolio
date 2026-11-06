@@ -3,7 +3,6 @@ import { profile } from "./profile";
 /** The sections of the page, in order. The nav bar and page.tsx both read this list. */
 export const SECTIONS = [
   { id: "home", label: "Home" },
-  { id: "about", label: "About" },
   { id: "education", label: "Education" },
   { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },

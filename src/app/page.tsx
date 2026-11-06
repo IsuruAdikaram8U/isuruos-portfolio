@@ -1,15 +1,15 @@
 import IntroOverlay from "@/components/intro/IntroOverlay";
 import NavBar from "@/components/shell/NavBar";
-import Hero from "@/components/sections/home/Hero";
+import Home from "@/components/sections/home/Home";
 import WorkspacePlaceholder from "@/components/shell/WorkspacePlaceholder";
 
-export default function Home() {
+export default function Page() {
   return (
     <>
       <IntroOverlay />
       <NavBar />
       <main>
-        <Hero />
+        <Home />
         <WorkspacePlaceholder />
       </main>
     </>

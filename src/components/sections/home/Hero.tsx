@@ -11,7 +11,7 @@ import "./home.css";
 const d = (n: number) => ({ "--d": n }) as React.CSSProperties;
 
 /**
- * Home: who Isuru is, what he does, and where to go next.
+ * The first screen of Home: who Isuru is, what he does, and where to go next.
  * Left: name, role, one-line intro, buttons. Right: the real photo
  * (the intro showed it in 0s and 1s; here it's the real thing).
  * Everything fades up once the intro has slid away.
@@ -26,7 +26,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="hm" data-ready={!introOpen} aria-labelledby="hm-title">
+    <div className="hm" data-ready={!introOpen}>
       <div className="hm-bg" aria-hidden="true" />
 
       <div className="hm-in">
@@ -101,10 +101,10 @@ export default function Hero() {
         </div>
       </div>
 
-      <a className="hm-scroll" href="#about" onClick={(e) => go(e, "about")} aria-label="Scroll to About">
+      <a className="hm-scroll" href="#stats" onClick={(e) => go(e, "stats")} aria-label="Scroll down">
         <span>scroll</span>
         <span className="hm-scroll-line" aria-hidden="true" />
       </a>
-    </section>
+    </div>
   );
 }

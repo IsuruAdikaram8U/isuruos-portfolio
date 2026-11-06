@@ -98,42 +98,15 @@ export const hero = {
   building: { name: "Lectra", text: "a smart academic timetable system", url: "https://github.com/IsuruAdikaram8U/lectra" },
 };
 
-/* ---------- about ---------- */
-export const about = {
-  heading: "Hi, I'm Isuru.",
-  photo: { src: "/images/isuru-portrait.webp", alt: "Isuru Adikaram smiling outdoors in a grey t-shirt, with green hills behind him", width: 720, height: 900 },
-  lead: "I'm an IT undergraduate at the University of Moratuwa who builds full-stack and backend systems with Java, Spring Boot, React and REST APIs.",
-  paragraphs: [
-    "I like the parts of software most people never see: database schemas, real-time features, and the services that keep everything in sync. Lately that has meant WebSocket order queues for a multi-branch restaurant platform, a constraint-based engine that generates clash-free university timetables, and a chess board that detects and moves its own pieces.",
-    "I learn fastest under pressure, so a lot of my weekends go to hackathons. I won CodeSplash'26 and led teams to the finals of J'PuraXtreme 3.0 and CodeRally 7.0.",
-  ],
-  stats: [
-    { value: "4", label: "projects shipped" },
-    { value: "7", label: "competitions" },
-    { value: "1", label: "championship" },
-    { value: "6", label: "certifications" },
-  ],
-  facts: [
-    { label: "Studying", value: "B.Sc. (Hons) Information Technology, University of Moratuwa" },
-    { label: "Results", value: "CGPA 3.77 / 4.00 · Dean's List, semesters 3 and 4" },
-    { label: "Focus", value: "Full-stack and backend engineering" },
-    { label: "Based in", value: "Moratuwa, Sri Lanka" },
-    { label: "Looking for", value: "A software engineering internship" },
-    { label: "How I work", value: "Agile and Scrum · team lead in 3 competitions" },
-  ],
-  outsideCode: [
-    { title: "Choir", detail: "University Classical Music Society and FIT Tunes" },
-    { title: "High jump", detail: "2nd place (silver), Track & Field Freshers' Meet 2024" },
-    { title: "Rotaract", detail: "Organizing committee, SLRMUN 2025 and Binara Padura" },
-    { title: "Volunteering", detail: "DMC emergency data and operations, Cyclone Ditwah response" },
-  ],
-  // Photo "detector" overlay boxes, as fractions of the image (x, y, w, h).
-  detections: [
-    { label: "developer", score: 0.98, box: [0.03, 0.04, 0.94, 0.93], tone: "accent", dashed: true },
-    { label: "face", score: 0.99, box: [0.325, 0.185, 0.35, 0.31], tone: "accent" },
-    { label: "smile", score: 0.97, box: [0.425, 0.386, 0.175, 0.072], tone: "warm" },
-  ],
-};
+/* ---------- stats (shown in Home, under the hero) ---------- */
+export type Stat = { value: number; decimals?: number; suffix?: string; label: string; note: string };
+
+export const stats: Stat[] = [
+  { value: 3.77, decimals: 2, label: "CGPA", note: "out of 4.00" },
+  { value: 2, suffix: "×", label: "Dean's List", note: "semesters 3 and 4" },
+  { value: 7, label: "Competitions", note: "1 championship, 2 finals" },
+  { value: 4, label: "Projects", note: "web, real-time and hardware" },
+];
 
 /* ---------- education (compiler pipeline) ---------- */
 export const education: EducationStage[] = [
