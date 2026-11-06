@@ -1,0 +1,81 @@
+/* =========================================================
+   Shared UI pieces (prefix: ui-)
+   ========================================================= */
+
+/* ---------- section header ---------- */
+.ui-head {
+  --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto 72px;
+  max-width: 760px;
+}
+
+.ui-head[data-align="left"] {
+  align-items: flex-start;
+  text-align: left;
+  margin-left: 0;
+}
+
+.ui-head > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s var(--ease);
+}
+
+.ui-head > :nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.ui-head > :nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.ui-head[data-in="true"] > * {
+  opacity: 1;
+  transform: none;
+}
+
+.ui-head-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ui-head-n {
+  color: var(--accent);
+}
+
+.ui-head-bar {
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--line-2));
+}
+
+.ui-head-title {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(40px, 5.4vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  color: var(--fg);
+}
+
+.ui-head-sub {
+  margin: 18px 0 0;
+  max-width: 54ch;
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.6;
+  color: var(--muted);
+}
