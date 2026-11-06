@@ -89,6 +89,15 @@ export const profile = {
   openTo: "Full-stack / backend software engineering internship",
 };
 
+/* ---------- home (hero) ---------- */
+export const hero = {
+  status: "Open to internships",
+  focus: "Full-Stack & Backend",
+  lead: "IT undergraduate at the University of Moratuwa. I build scalable systems and real-time web apps with Java, Spring Boot and React.",
+  photo: { src: "/images/isuru-cutout.webp", alt: "Isuru Adikaram smiling, in a dark grey t-shirt", width: 1254, height: 1254 },
+  building: { name: "Lectra", text: "a smart academic timetable system", url: "https://github.com/IsuruAdikaram8U/lectra" },
+};
+
 /* ---------- about ---------- */
 export const about = {
   heading: "Hi, I'm Isuru.",
