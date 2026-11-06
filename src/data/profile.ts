@@ -83,7 +83,7 @@ export const profile = {
   // phone is intentionally NOT included: keep it on the CV only (spam bots scrape public sites).
   links: {
     github: "https://github.com/IsuruAdikaram8U",
-    linkedin: "",                         // TODO: full LinkedIn URL
+    linkedin: "https://www.linkedin.com/in/isuru-adikaram-65a261323",
     cv: "/cv/Isuru_Adikaram_CV.pdf",      // TODO: web copy of the CV WITHOUT the References section
   },
   openTo: "Full-stack / backend software engineering internship",

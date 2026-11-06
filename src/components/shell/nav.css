@@ -1,0 +1,438 @@
+/* =========================================================
+   Top navigation bar (prefix: nv-)
+   ========================================================= */
+
+.nv {
+  --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px 0;
+  pointer-events: none;
+  /* hidden while the intro is open, then drops in */
+  opacity: 0;
+  transform: translateY(-18px);
+  transition:
+    opacity 0.7s var(--ease) 0.15s,
+    transform 0.7s var(--ease) 0.15s;
+}
+
+.nv[data-ready="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- the bar: see-through at the top, floating glass after scrolling ---------- */
+.nv-bar {
+  pointer-events: auto;
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 12px 0 26px;
+  border-radius: 24px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition:
+    max-width 0.6s var(--ease),
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    backdrop-filter 0.4s ease;
+}
+
+.nv[data-scrolled="true"] .nv-bar {
+  max-width: 1320px;
+  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  border-color: color-mix(in srgb, var(--line-2) 65%, transparent);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    0 18px 48px -18px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- brand: "Isuru." like the intro's "Hello." ---------- */
+.nv-brand {
+  flex: none;
+  font-family: var(--f-display);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--fg);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.nv-brand span {
+  display: inline-block;
+  color: var(--accent);
+  transition: transform 0.35s var(--ease);
+}
+
+.nv-brand:hover span {
+  transform: translateY(-3px) scale(1.25);
+}
+
+/* ---------- section links with the sliding pill ---------- */
+.nv-links {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  padding: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+}
+
+.nv-link {
+  position: relative;
+  z-index: 1;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+
+.nv-link:hover,
+.nv-link[aria-current="true"] {
+  color: var(--fg);
+}
+
+.nv-link:focus-visible {
+  outline: none;
+}
+
+/* the small glowing dot under the section you are reading */
+.nv-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.35s var(--ease);
+}
+
+.nv-link[aria-current="true"]::after {
+  transform: translateX(-50%) scale(1);
+}
+
+.nv-pill {
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  width: var(--w, 0px);
+  transform: translateX(var(--x, 0px));
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 16px -8px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+}
+
+.nv-pill[data-on="true"] {
+  opacity: 1;
+  transition:
+    transform 0.45s var(--ease),
+    width 0.45s var(--ease),
+    opacity 0.3s ease;
+}
+
+/* ---------- right side: resume button + menu button ---------- */
+.nv-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nv-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s ease;
+}
+
+.nv-cta svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s var(--ease);
+}
+
+.nv-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 26px -8px var(--glow-a);
+}
+
+.nv-cta:hover svg {
+  transform: translateY(2px);
+}
+
+.nv-burger {
+  display: none;
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  cursor: pointer;
+}
+
+.nv-burger span {
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  height: 1.6px;
+  border-radius: 2px;
+  background: var(--fg);
+  transition:
+    transform 0.4s var(--ease),
+    top 0.4s var(--ease);
+}
+
+.nv-burger span:first-child {
+  top: 16px;
+}
+
+.nv-burger span:last-child {
+  top: 23px;
+}
+
+.nv-burger[data-open="true"] span:first-child {
+  top: 19.5px;
+  transform: rotate(45deg);
+}
+
+.nv-burger[data-open="true"] span:last-child {
+  top: 19.5px;
+  transform: rotate(-45deg);
+}
+
+/* ---------- reading progress line ---------- */
+.nv-progress {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: -1px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--violet));
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.nv[data-scrolled="true"] .nv-progress {
+  opacity: 0.9;
+}
+
+/* ---------- full-screen menu (phones and tablets) ---------- */
+.nv-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 104px 24px 32px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s linear 0.4s;
+}
+
+.nv-sheet[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease;
+}
+
+.nv-sheet-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nv-sheet-links a,
+.nv-sheet-foot {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.5s var(--ease, ease),
+    transform 0.5s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+.nv-sheet[data-open="true"] .nv-sheet-links a,
+.nv-sheet[data-open="true"] .nv-sheet-foot {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i) * 45ms + 80ms);
+}
+
+.nv-sheet-links a {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+  font-family: var(--f-display);
+  font-size: clamp(26px, 6.5vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nv-sheet-links a:hover,
+.nv-sheet-links a[aria-current="true"] {
+  color: var(--fg);
+}
+
+.nv-num {
+  min-width: 2ch;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--faint);
+}
+
+.nv-sheet-links a[aria-current="true"] .nv-num {
+  color: var(--accent);
+}
+
+.nv-sheet-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nv-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  color: var(--fg);
+}
+
+.nv-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+/* ---------- responsive ---------- */
+
+/* laptops (1180–1439px): a bit smaller so all 9 links still fit on one line */
+@media (min-width: 1180px) and (max-width: 1439px) {
+  .nv-bar {
+    height: 62px;
+    gap: 14px;
+    padding: 0 10px 0 20px;
+    border-radius: 20px;
+  }
+
+  .nv[data-scrolled="true"] .nv-bar {
+    max-width: 1160px;
+  }
+
+  .nv-brand {
+    font-size: 22px;
+  }
+
+  .nv-link {
+    padding: 8px 13px;
+    font-size: 14px;
+  }
+
+  .nv-actions > .nv-cta {
+    height: 42px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1179px) {
+  .nv-links {
+    display: none;
+  }
+
+  .nv-burger {
+    display: block;
+  }
+
+  .nv-actions {
+    margin-left: auto;
+  }
+
+  .nv[data-scrolled="true"] .nv-bar {
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 520px) {
+  .nv {
+    padding: 10px 12px 0;
+  }
+
+  .nv-bar {
+    height: 56px;
+    padding: 0 7px 0 16px;
+  }
+
+  .nv-actions > .nv-cta {
+    display: none;
+  }
+}
+
+@media (min-width: 1180px) {
+  .nv-sheet {
+    display: none;
+  }
+}
